@@ -116,14 +116,16 @@ fail_interrupt:
 fail_interrupt_0:
     pci_free_irq(dev, 0, dev);
 fail:
-    if (bce && bce->dev)
+    if (bce && bce->dev) {
         device_destroy(bce_class, bce->devt);
-    kfree(bce);
 
-    if (!IS_ERR_OR_NULL(bce->reg_mem_mb))
-        pci_iounmap(dev, bce->reg_mem_mb);
-    if (!IS_ERR_OR_NULL(bce->reg_mem_dma))
-        pci_iounmap(dev, bce->reg_mem_dma);
+        if (!IS_ERR_OR_NULL(bce->reg_mem_mb))
+            pci_iounmap(dev, bce->reg_mem_mb);
+        if (!IS_ERR_OR_NULL(bce->reg_mem_dma))
+            pci_iounmap(dev, bce->reg_mem_dma);
+
+        kfree(bce);
+    }
 
     pci_free_irq_vectors(dev);
     pci_release_regions(dev);
